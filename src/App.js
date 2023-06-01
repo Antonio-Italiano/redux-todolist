@@ -2,11 +2,22 @@ import React, { useRef } from 'react';
 import './App.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { addTodo } from './features/todos/todosSlice';
+import { filterTodo } from './features/todos/filterSlice';
 import Todos from './features/Todos';
+import AddTodo from './features/todos/AddTodo';
+import FilterTodo from './features/todos/FilterTodo';
 
 function App() { 
 
-  const todos = useSelector(state => state.todos);
+  let todos = useSelector(state => state.todos);
+  const activeFilter = useSelector(state => state.filter);
+  
+  todos = todos.filter(todo => {
+    if(activeFilter === 'ALL') return true;
+    if(activeFilter === 'COMPLETED') return todo.completed;
+    return !todo.completed;
+  });
+
   const dispatch = useDispatch();
 
   const todoEl = useRef('');
@@ -15,21 +26,22 @@ function App() {
     dispatch(addTodo({completed: false, id: todos.length, name: todoEl.current.value, dueDate: new Date().toLocaleDateString(), user_id: 1 }));
   }
 
-
+  const onFilterTodo = (filter) => {
+    dispatch(filterTodo(filter));
+  }
+  
   return (
     <div className="App container-fluid">
       <div className='d-flex justify-content-center'>
         <div className='col-md-6 mt-5'>
           <h1>MY TODO LIST</h1>
 
+          <AddTodo todoEl={todoEl} manageClick={manageClick}/> 
+
           <Todos todos={todos}/>
 
-          <form className='mt-5'>
-            <div className='form-group'>
-              <input ref={todoEl} className='form-firld' name="todo" id='todo'/>
-              <button onClick={manageClick} className='mx-1 btn btn-success py-1 mb-1'>ADD</button>
-            </div>
-          </form>
+          <FilterTodo onFilter={onFilterTodo} filter = {activeFilter}/>
+
         </div>
       </div>
     </div>

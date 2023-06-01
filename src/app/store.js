@@ -1,8 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 import todosReducer from '../features/todos/todosSlice.js';
-
+import filterReducer from '../features/todos/filterSlice'
 export const store = configureStore({
   reducer: {
-     todos: todosReducer,
+    filter: filterReducer,
+    todos: todosReducer,
   },
 });
